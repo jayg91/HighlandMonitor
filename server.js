@@ -1,6 +1,14 @@
+const express = require('express');
+const app = express();
+const port = 3000;
+
 const axios = require('axios');
 const { parseString } = require('xml2js');
 const mongoose = require('mongoose');
+
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
 
 // Connect to MongoDB (replace 'your_database_url' with your actual MongoDB connection string)
 mongoose.connect('mongodb+srv://barbara:feldon@cluster0.6ixp9nq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', { useNewUrlParser: true, useUnifiedTopology: true });
@@ -48,3 +56,8 @@ async function makeApiCall() {
 
 // Set an interval to make API call every 1 minute (60,000 milliseconds)
 setInterval(makeApiCall, 60000);
+
+
+app.listen(port, () => {
+  console.log(`Example app listening at http://localhost:${port}`);
+});
