@@ -43,8 +43,7 @@ async function makeApiCall() {
           HighlandVoltage: result.i.HighlandVoltage[0], // Adjust the field names based on your XML structure
           // Add more fields as needed
         });
-        const strippedResult = result.replaceAll(" Vdc ", "");
-        console.log(strippedResult)
+        console.log(result)
         // Save the document to the database
         await newData.save();
         console.log('Data saved to the database:', newData);
