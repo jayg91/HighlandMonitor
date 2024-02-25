@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 5002
 
 const axios = require('axios');
 const { parseString } = require('xml2js');
@@ -43,7 +43,8 @@ async function makeApiCall() {
           HighlandVoltage: result.i.HighlandVoltage[0], // Adjust the field names based on your XML structure
           // Add more fields as needed
         });
-        console.log(result)
+        const strippedResult = result.replaceAll(" Vdc ", "");
+        console.log(strippedResult)
         // Save the document to the database
         await newData.save();
         console.log('Data saved to the database:', newData);
