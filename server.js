@@ -4,13 +4,13 @@ const port = process.env.PORT || 5002
 
 const axios = require('axios');
 const { parseString } = require('xml2js');
+const xml2js = require('xml2js');
 const mongoose = require('mongoose');
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
+// Middleware to parse JSON
+app.use(express.json());
 
-// Connect to MongoDB (replace 'your_database_url' with your actual MongoDB connection string)
+// Connect to MongoDB
 mongoose.connect('mongodb+srv://barbara:feldon@cluster0.6ixp9nq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Define a schema for your data
@@ -19,6 +19,7 @@ const dataSchema = new mongoose.Schema({
   // Adjust this according to the actual structure of the XML response
   HighlandVoltage: String,
   // Add more fields as needed
+  Date: String,
 });
 
 // Create a model based on the schema
@@ -38,12 +39,15 @@ async function makeApiCall() {
       if (err) {
         console.error('Error parsing XML:', err.message);
       } else {
+        var today = new Date();
+        var time = today.getHours() + ":" + today.getMinutes() + " HRS";
         // Create a new document based on the parsed XML data
         const newData = new Data({
           HighlandVoltage: result.i.HighlandVoltage[0], // Adjust the field names based on your XML structure
           // Add more fields as needed
+          Date: time,
         });
-        console.log(result)
+
         // Save the document to the database
         await newData.save();
         console.log('Data saved to the database:', newData);
@@ -54,8 +58,22 @@ async function makeApiCall() {
   }
 }
 
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
+
+//API Endpoint to retrieve and export data as XML
+app.get('/api/data/getVoltage', async (req, res) => {
+  try {
+    const voltageData = await Data.find({});
+    res.json(voltageData);
+  } catch (error) {
+    console.error('Error: ', error);
+  }
+});
+
 // Set an interval to make API call every 1 minute (60,000 milliseconds)
-setInterval(makeApiCall, 60000);
+setInterval(makeApiCall, 3600000);
 
 
 app.listen(port, () => {
