@@ -6,6 +6,7 @@ const axios = require('axios');
 const { parseString } = require('xml2js');
 const xml2js = require('xml2js');
 const mongoose = require('mongoose');
+const { Double, Decimal128 } = require('mongodb');
 
 // Middleware to parse JSON
 app.use(express.json());
@@ -17,7 +18,7 @@ mongoose.connect('mongodb+srv://barbara:feldon@cluster0.6ixp9nq.mongodb.net/?ret
 const dataSchema = new mongoose.Schema({
   // Define the structure of your data
   // Adjust this according to the actual structure of the XML response
-  HighlandVoltage: String,
+  HighlandVoltage: Number,
   // Add more fields as needed
   Date: String,
 });
@@ -39,13 +40,27 @@ async function makeApiCall() {
       if (err) {
         console.error('Error parsing XML:', err.message);
       } else {
-        var today = new Date();
-        var time = today.getHours() + ":" + today.getMinutes() + " HRS";
+        //Formatting Current Date/Time
+        const currentDate = new Date();
+        const options = {
+          year: '2-digit',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          timeZone: 'PST', // Adjust this based on your timezone
+        };
+        const formattedDate = new Intl.DateTimeFormat('en-US', options).format(currentDate);
+
+        //Converting Voltage from String to Double "12.00 Vdc => 12.00"
+        const numericVoltage = parseFloat(result.i.HighlandVoltage[0].match(/[\d.]+/)[0]);
+        console.log(numericVoltage)
+
         // Create a new document based on the parsed XML data
         const newData = new Data({
-          HighlandVoltage: result.i.HighlandVoltage[0], // Adjust the field names based on your XML structure
+          HighlandVoltage: numericVoltage, // Adjust the field names based on your XML structure
           // Add more fields as needed
-          Date: time,
+          Date: formattedDate,
         });
 
         // Save the document to the database
@@ -73,7 +88,7 @@ app.get('/api/data/getVoltage', async (req, res) => {
 });
 
 // Set an interval to make API call every 1 minute (60,000 milliseconds)
-setInterval(makeApiCall, 3600000);
+setInterval(makeApiCall, 10000);
 
 
 app.listen(port, () => {
