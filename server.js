@@ -88,7 +88,7 @@ app.get('/api/data/getVoltage', async (req, res) => {
 });
 
 // Set an interval to make API call every 1 minute (60,000 milliseconds)
-setInterval(makeApiCall, 10000);
+setInterval(makeApiCall, 60000);
 
 
 app.listen(port, () => {
