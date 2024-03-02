@@ -85,14 +85,9 @@ app.get('/api/data/getVoltage', async (req, res) => {
 });
 
 // Set an interval to make API call every 1 minute (60,000 milliseconds)
-setInterval(makeApiCall, 60000);
+setInterval(makeApiCall, 3600000);
 
 
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
-  const currentDate = new Date();
-  const timeZone = 'US/Pacific';
-
-  const convertedDate = moment(currentDate).tz(timeZone);
-  console.log(convertedDate)
+  console.log(`Server running on port: ${port}`);
 });
