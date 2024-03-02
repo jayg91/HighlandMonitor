@@ -1,3 +1,5 @@
+const moment = require('moment-timezone');
+
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 5002
@@ -20,7 +22,7 @@ const dataSchema = new mongoose.Schema({
   // Adjust this according to the actual structure of the XML response
   HighlandVoltage: Number,
   // Add more fields as needed
-  Date: String,
+  Date: Date,
 });
 
 // Create a model based on the schema
@@ -42,15 +44,10 @@ async function makeApiCall() {
       } else {
         //Formatting Current Date/Time
         const currentDate = new Date();
-        const options = {
-          year: '2-digit',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          timeZone: 'PST', // Adjust this based on your timezone
-        };
-        const formattedDate = new Intl.DateTimeFormat('en-US', options).format(currentDate);
+        const timeZone = 'US/Pacific';
+
+        const convertedDate = moment(currentDate).tz(timeZone);
+        console.log(convertedDate)
 
         //Converting Voltage from String to Double "12.00 Vdc => 12.00"
         const numericVoltage = parseFloat(result.i.HighlandVoltage[0].match(/[\d.]+/)[0]);
@@ -93,4 +90,9 @@ setInterval(makeApiCall, 60000);
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
+  const currentDate = new Date();
+  const timeZone = 'US/Pacific';
+
+  const convertedDate = moment(currentDate).tz(timeZone);
+  console.log(convertedDate)
 });
