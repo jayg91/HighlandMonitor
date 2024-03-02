@@ -22,7 +22,7 @@ const dataSchema = new mongoose.Schema({
   // Adjust this according to the actual structure of the XML response
   HighlandVoltage: Number,
   // Add more fields as needed
-  Date: Date,
+  Date: String,
 });
 
 // Create a model based on the schema
@@ -46,12 +46,12 @@ async function makeApiCall() {
         const currentDate = new Date();
         const timeZone = 'US/Pacific';
 
-        const convertedDate = moment(currentDate).tz(timeZone);
-        console.log(convertedDate)
+        const convertedDate = moment(currentDate).tz(timeZone).format();
+        console.log(convertedDate);
 
         //Converting Voltage from String to Double "12.00 Vdc => 12.00"
         const numericVoltage = parseFloat(result.i.HighlandVoltage[0].match(/[\d.]+/)[0]);
-        console.log(numericVoltage)
+        console.log(numericVoltage);
 
         // Create a new document based on the parsed XML data
         const newData = new Data({
@@ -85,8 +85,7 @@ app.get('/api/data/getVoltage', async (req, res) => {
 });
 
 // Set an interval to make API call every 1 minute (60,000 milliseconds)
-setInterval(makeApiCall, 3600000);
-
+setInterval(makeApiCall, 360000);
 
 app.listen(port, () => {
   console.log(`Server running on port: ${port}`);
