@@ -57,7 +57,7 @@ async function makeApiCall() {
         const newData = new Data({
           HighlandVoltage: numericVoltage, // Adjust the field names based on your XML structure
           // Add more fields as needed
-          Date: formattedDate,
+          Date: convertedDate,
         });
 
         // Save the document to the database
